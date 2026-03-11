@@ -11,6 +11,7 @@ import {
   InlineNotification,
   Tag
 } from '@carbon/react';
+import { AiLabel } from '@carbon/react/icons';
 import Header from './components/Header/Header';
 import './App.scss';
 
@@ -105,11 +106,11 @@ function App() {
   };
 
   // Function to get tile color class based on similarity score
-  // const getSimilarityColorClass = (score) => {
-  //   if (score >= 0.8) return 'high-similarity';
-  //   if (score >= 0.4) return 'medium-similarity';
-  //   return 'low-similarity';
-  // };
+  const getSimilarityColorClass = (score) => {
+    if (score >= 0.7) return 'high-similarity';
+    if (score >= 0.4) return 'medium-similarity';
+    return 'low-similarity';
+  };
 
   const renderResults = () => {
     if (!results) return null;
@@ -139,13 +140,28 @@ function App() {
 
     return (
       <div className="results-container">
+        {/* Display Predicted Category */}
+        {results?.data?.category && (
+          <Grid className="predicted-category-grid">
+            <Column lg={16} md={8} sm={4}>
+              <div className="predicted-category-section">
+                <h3 className="predicted-category-title">
+                  Predicted Category - <span className="predicted-category-value">{results.data.category}</span>
+                </h3>
+              </div>
+            </Column>
+          </Grid>
+        )}
+        
         <Grid>
           {sortedMatches.map((match, index) => (
             <Column key={index} lg={16} md={8} sm={4}>
-              <Tile className="result-tile">
-              {/* <Tile className={`result-tile ${getSimilarityColorClass(match.similarity_score || 0)}`}> */}
+              <Tile className={`result-tile ${getSimilarityColorClass(match.similarity_score || 0)}`}>
                 <div className="result-header">
                   <h4 className="result-subject">{match.subject || 'No Subject'}</h4>
+                  <span className={`accuracy-badge ${getSimilarityColorClass(match.similarity_score || 0)}`}>
+                    Accuracy {((match.similarity_score || 0) * 100).toFixed(0)}%
+                  </span>
                 </div>
                 <a
                   href={`https://w3.ibm.com/tools/caseviewer/case/${match.ticket}`}
@@ -183,7 +199,8 @@ function App() {
             <Column lg={16} md={8} sm={4}>
               <Tile className="llm-resolution-tile">
                 <div className="result-header">
-                  <h4 className="result-subject">LLM Generated Resolution</h4>
+                  <h4 className="result-subject">✨ LLM Generated Resolution</h4>
+                  <AiLabel size={20}/>
                 </div>
                 <div className="result-divider"></div>
                 <div className="result-section">

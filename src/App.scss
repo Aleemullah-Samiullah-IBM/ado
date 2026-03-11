@@ -132,48 +132,56 @@
   padding: 0 $spacing-05;
 }
 
+.predicted-category-grid {
+  margin-bottom: $spacing-05;
+}
+
+.predicted-category-section {
+  padding: $spacing-05;
+  background-color: $layer-01;
+  border-radius: 4px;
+  border-left: 4px solid $link-primary;
+}
+
+.predicted-category-title {
+  @include type-style('heading-03');
+  margin: 0;
+  color: $text-primary;
+  font-weight: 500;
+}
+
+.predicted-category-value {
+  color: $link-primary;
+  font-weight: 600;
+}
+
 .result-tile {
   margin-bottom: $spacing-05;
   padding: $spacing-06;
   background-color: $layer-01;
-  // border: 2px solid transparent;
   
   &:hover {
     background-color: $layer-hover-01;
   }
 
-  // Similarity score color coding
-  // &.high-similarity {
-  //   border-color: $support-success; // Green for >= 0.8
-  //   background-color: rgba(36, 161, 72, 0.08); // Light green background
-  //
-  //   &:hover {
-  //     background-color: rgba(36, 161, 72, 0.12);
-  //   }
-  // }
+  // Similarity score color coding - left border only
+  &.high-similarity {
+    border-left: 4px solid $support-success; // Green for >= 0.8
+  }
 
-  // &.medium-similarity {
-  //   border-color: $support-warning; // Amber for 0.4 - 0.79
-  //   background-color: rgba(255, 196, 0, 0.08); // Light amber background
-  //
-  //   &:hover {
-  //     background-color: rgba(255, 196, 0, 0.12);
-  //   }
-  // }
+  &.medium-similarity {
+    border-left: 4px solid $support-warning; // Amber for 0.4 - 0.79
+  }
 
-  // &.low-similarity {
-  //   border-color: $support-info; // Light blue for 0 - 0.39
-  //   background-color: rgba(68, 157, 209, 0.08); // Light blue background
-  //
-  //   &:hover {
-  //     background-color: rgba(68, 157, 209, 0.12);
-  //   }
-  // }
+  &.low-similarity {
+    border-left: 4px solid $support-info; // Light blue for 0 - 0.39
+  }
 }
 
 .result-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: $spacing-03;
   margin-bottom: $spacing-04;
   flex-wrap: wrap;
@@ -184,6 +192,28 @@
   margin: 0;
   color: $text-primary;
   font-weight: 600;
+  flex: 1;
+}
+
+.accuracy-badge {
+  @include type-style('label-01');
+  padding: $spacing-02 $spacing-03;
+  border-radius: 4px;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: $text-on-color;
+  
+  &.high-similarity {
+    background-color: $support-success;
+  }
+  
+  &.medium-similarity {
+    background-color: $support-warning;
+  }
+  
+  &.low-similarity {
+    background-color: $support-info;
+  }
 }
 
 .result-category-tag {
@@ -254,7 +284,27 @@
 .llm-resolution-tile {
   padding: $spacing-06;
   background-color: $layer-01;
-  border-left: 4px solid $support-success;
+  position: relative;
+  border: 2px solid transparent;
+  
+  // Blue gradient border for AI-generated content
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      to bottom,
+      rgba(120, 180, 255, 0.8),
+      rgba(70, 130, 255, 0.6),
+      rgba(30, 90, 255, 0.4)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
   
   &:hover {
     background-color: $layer-hover-01;
