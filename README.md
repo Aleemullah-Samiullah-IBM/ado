@@ -6,13 +6,11 @@ A React application built with IBM Carbon Design System for searching and analyz
 
 - Clean, centered search interface with Carbon components
 - Three configurable options:
-  - Strict
   - Use LLM Fallback
   - Show LLM Resolution
 - API integration with POST endpoint
 - Results displayed as Carbon tiles/cards
 - Responsive design
-- Dark theme (g100)
 
 ## Installation
 
@@ -22,11 +20,22 @@ npm install
 
 ## Running the Application
 
+### Development Mode
 ```bash
-npm start
+npm run dev
 ```
 
-The application will open at [http://localhost:3000](http://localhost:3000)
+The application will automatically open at [http://localhost:3000](http://localhost:3000)
+
+### Build for Production
+```bash
+npm run build
+```
+
+### Preview Production Build
+```bash
+npm run preview
+```
 
 ## API Endpoint
 
@@ -45,6 +54,7 @@ POST http://moaavm03.dev.fyre.ibm.com:9090/api/v1/resolution
 ## Technologies Used
 
 - React 18
+- Vite (Build tool and dev server)
 - IBM Carbon Design System (@carbon/react)
-- Carbon Icons
-- SCSS for styling
+- Carbon Icons (@carbon/icons-react)
+- Sass/SCSS for styling

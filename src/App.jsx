@@ -10,13 +10,20 @@ import {
   Loading,
   InlineNotification,
   Tag,
-  Slider
+  Slider,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  FileUploader
 } from '@carbon/react';
 import { AiLabel } from '@carbon/react/icons';
 import Header from './components/Header/Header';
 import './App.scss';
 
 function App() {
+  // Single search state
   const [query, setQuery] = useState('');
   const [strictCategory, setStrictCategory] = useState(true);
   const [useLlmFallback, setUseLlmFallback] = useState(true);
@@ -27,6 +34,12 @@ function App() {
   const [minAccuracy, setMinAccuracy] = useState(70);
   const [maxAccuracy, setMaxAccuracy] = useState(100);
   const textareaRef = useRef(null);
+
+  // Batch upload state
+  const [batchFile, setBatchFile] = useState(null);
+  const [batchLoading, setBatchLoading] = useState(false);
+  const [batchError, setBatchError] = useState(null);
+  const [batchResults, setBatchResults] = useState(null);
 
   const handleSearch = async () => {
     if (!query.trim()) {
@@ -62,6 +75,54 @@ function App() {
       setError(`Failed to fetch results: ${err.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBatchUpload = async () => {
+    if (!batchFile) {
+      setBatchError('Please select a CSV file');
+      return;
+    }
+
+    setBatchLoading(true);
+    setBatchError(null);
+    setBatchResults(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', batchFile);
+      formData.append('use_llm_fallback', useLlmFallback);
+      formData.append('strict_category', strictCategory);
+      formData.append('show_llm_resolution', showLlmResolution);
+
+      const response = await fetch('http://moaavm03.dev.fyre.ibm.com:9090/api/v1/batch', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setBatchResults(data);
+    } catch (err) {
+      setBatchError(`Failed to process batch file: ${err.message}`);
+    } finally {
+      setBatchLoading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.name.endsWith('.csv')) {
+        setBatchError('Please select a CSV file');
+        setBatchFile(null);
+        return;
+      }
+      setBatchFile(file);
+      setBatchError(null);
     }
   };
 
@@ -265,73 +326,277 @@ function App() {
     );
   };
 
+  const renderBatchResults = () => {
+    if (!batchResults) return null;
+
+    const batchData = batchResults?.data || [];
+    
+    if (batchData.length === 0) {
+      return (
+        <div className="results-container">
+          <InlineNotification
+            kind="info"
+            title="No Results"
+            subtitle="No batch results found."
+            hideCloseButton
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="results-container">
+        <Grid className="batch-summary-grid">
+          <Column lg={16} md={8} sm={4}>
+            <div className="batch-summary-section">
+              <h3 className="batch-summary-title">
+                Batch Processing Complete - {batchData.length} {batchData.length === 1 ? 'Query' : 'Queries'} Processed
+              </h3>
+            </div>
+          </Column>
+        </Grid>
+
+        {batchData.map((queryResult, queryIndex) => {
+          const historyMatches = queryResult?.history_match || [];
+          const sortedMatches = [...historyMatches].sort((a, b) => {
+            const scoreA = a.similarity_score || 0;
+            const scoreB = b.similarity_score || 0;
+            return scoreB - scoreA;
+          });
+
+          const filteredMatches = sortedMatches.filter((match) => {
+            const accuracyPercent = (match.similarity_score || 0) * 100;
+            return accuracyPercent >= minAccuracy && accuracyPercent <= maxAccuracy;
+          });
+
+          return (
+            <div key={queryIndex} className="batch-query-section">
+              <Grid className="batch-query-header-grid">
+                <Column lg={16} md={8} sm={4}>
+                  <div className="batch-query-header">
+                    <h4 className="batch-query-title">Query {queryIndex + 1}: {queryResult.query || 'N/A'}</h4>
+                    {queryResult.category && (
+                      <Tag type={getCategoryColor(queryResult.category)} size="md">
+                        {queryResult.category}
+                      </Tag>
+                    )}
+                  </div>
+                </Column>
+              </Grid>
+
+              {filteredMatches.length === 0 ? (
+                <Grid>
+                  <Column lg={16} md={8} sm={4}>
+                    <InlineNotification
+                      kind="info"
+                      title="No Matches"
+                      subtitle="No history matches found for this query in the selected accuracy range."
+                      hideCloseButton
+                    />
+                  </Column>
+                </Grid>
+              ) : (
+                <Grid>
+                  {filteredMatches.map((match, matchIndex) => (
+                    <Column key={matchIndex} lg={16} md={8} sm={4}>
+                      <Tile className={`result-tile ${getSimilarityColorClass(match.similarity_score || 0)}`}>
+                        <div className="result-header">
+                          <h4 className="result-subject">{match.subject || 'No Subject'}</h4>
+                          <span className={`accuracy-badge ${getSimilarityColorClass(match.similarity_score || 0)}`}>
+                            Accuracy {((match.similarity_score || 0) * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                        <a
+                          href={`https://w3.ibm.com/tools/caseviewer/case/${match.ticket}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="result-ticket-link"
+                        >
+                          Ticket: {match.ticket}
+                        </a>
+                        {match.category && (
+                          <div className="result-category-container">
+                            <Tag type={getCategoryColor(match.category)} size="sm" className="result-category-tag">
+                              {match.category}
+                            </Tag>
+                          </div>
+                        )}
+                        
+                        <div className="result-divider"></div>
+                        <div className="result-section">
+                          <span className="sub-heading">Description</span>
+                          <p className="result-text">{match.description || 'No description available'}</p>
+                        </div>
+                        <div className="result-section">
+                          <span className="sub-heading">Resolution</span>
+                          <p className="result-text">{match.resolution || 'No resolution available'}</p>
+                        </div>
+                      </Tile>
+                    </Column>
+                  ))}
+                </Grid>
+              )}
+
+              {queryResult.llm_resolution && (
+                <Grid className="llm-resolution-grid">
+                  <Column lg={16} md={8} sm={4}>
+                    <Tile className="llm-resolution-tile">
+                      <div className="result-header">
+                        <h4 className="result-subject">✨ LLM Generated Resolution</h4>
+                        <AiLabel size={20}/>
+                      </div>
+                      <div className="result-divider"></div>
+                      <div className="result-section">
+                        <p className="result-text">{queryResult.llm_resolution}</p>
+                      </div>
+                    </Tile>
+                  </Column>
+                </Grid>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <Theme theme="g10">
       <Header />
       <Content className="app-content">
         <Grid className="search-container">
           <Column lg={16} md={8} sm={4}>
-            
-            <div className="search-wrapper">
-              <textarea
-                ref={textareaRef}
-                value={query}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter your search query..."
-                rows={1}
-                className="search-textarea"
-                disabled={loading}
-              />
-              
-              <div className="search-controls">
-                <div className="checkbox-group">
-                  <Checkbox
-                    id="strict-category"
-                    labelText="Search in predicted category"
-                    checked={strictCategory}
-                    onChange={(e) => setStrictCategory(e.target.checked)}
-                    disabled={loading}
-                  />
-                  <Checkbox
-                    id="show-llm-resolution"
-                    labelText="Show LLM Resolution"
-                    checked={showLlmResolution}
-                    onChange={(e) => setShowLlmResolution(e.target.checked)}
-                    disabled={loading}
-                  />
-                </div>
-                
-                <Button
-                  kind="primary"
-                  size="md"
-                  onClick={handleSearch}
-                  disabled={loading || !query.trim()}
-                >
-                  Search
-                </Button>
-              </div>
-            </div>
+            <Tabs>
+              <TabList aria-label="Search mode tabs" contained>
+                <Tab>Single Search</Tab>
+                <Tab>Batch Upload</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <div className="search-wrapper">
+                    <textarea
+                      ref={textareaRef}
+                      value={query}
+                      onChange={handleInputChange}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Enter your search query..."
+                      rows={1}
+                      className="search-textarea"
+                      disabled={loading}
+                    />
+                    
+                    <div className="search-controls">
+                      <div className="checkbox-group">
+                        <Checkbox
+                          id="strict-category"
+                          labelText="Search in predicted category"
+                          checked={strictCategory}
+                          onChange={(e) => setStrictCategory(e.target.checked)}
+                          disabled={loading}
+                        />
+                        <Checkbox
+                          id="show-llm-resolution"
+                          labelText="Show LLM Resolution"
+                          checked={showLlmResolution}
+                          onChange={(e) => setShowLlmResolution(e.target.checked)}
+                          disabled={loading}
+                        />
+                      </div>
+                      
+                      <Button
+                        kind="primary"
+                        size="md"
+                        onClick={handleSearch}
+                        disabled={loading || !query.trim()}
+                      >
+                        Search
+                      </Button>
+                    </div>
+                  </div>
 
-            {error && (
-              <InlineNotification
-                kind="error"
-                title="Error"
-                subtitle={error}
-                onCloseButtonClick={() => setError(null)}
-                className="error-notification"
-              />
-            )}
+                  {error && (
+                    <InlineNotification
+                      kind="error"
+                      title="Error"
+                      subtitle={error}
+                      onCloseButtonClick={() => setError(null)}
+                      className="error-notification"
+                    />
+                  )}
 
-            {loading && (
-              <div className="loading-container">
-                <Loading description="Searching..." withOverlay={false} />
-              </div>
-            )}
+                  {loading && (
+                    <div className="loading-container">
+                      <Loading description="Searching..." withOverlay={false} />
+                    </div>
+                  )}
+                </TabPanel>
+
+                <TabPanel>
+                  <div className="batch-upload-wrapper">
+                    <FileUploader
+                      labelTitle="Upload CSV file"
+                      labelDescription="Select a CSV file containing queries to process in batch"
+                      buttonLabel="Select file"
+                      filenameStatus="edit"
+                      accept={['.csv']}
+                      multiple={false}
+                      disabled={batchLoading}
+                      onChange={handleFileChange}
+                      iconDescription="Clear file"
+                    />
+                    
+                    <div className="search-controls">
+                      <div className="checkbox-group">
+                        <Checkbox
+                          id="batch-strict-category"
+                          labelText="Search in predicted category"
+                          checked={strictCategory}
+                          onChange={(e) => setStrictCategory(e.target.checked)}
+                          disabled={batchLoading}
+                        />
+                        <Checkbox
+                          id="batch-show-llm-resolution"
+                          labelText="Show LLM Resolution"
+                          checked={showLlmResolution}
+                          onChange={(e) => setShowLlmResolution(e.target.checked)}
+                          disabled={batchLoading}
+                        />
+                      </div>
+                      
+                      <Button
+                        kind="primary"
+                        size="md"
+                        onClick={handleBatchUpload}
+                        disabled={batchLoading || !batchFile}
+                      >
+                        Process Batch
+                      </Button>
+                    </div>
+                  </div>
+
+                  {batchError && (
+                    <InlineNotification
+                      kind="error"
+                      title="Error"
+                      subtitle={batchError}
+                      onCloseButtonClick={() => setBatchError(null)}
+                      className="error-notification"
+                    />
+                  )}
+
+                  {batchLoading && (
+                    <div className="loading-container">
+                      <Loading description="Processing batch file..." withOverlay={false} />
+                    </div>
+                  )}
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </Column>
         </Grid>
 
-        {renderResults()}
+        {results && renderResults()}
+        {batchResults && renderBatchResults()}
       </Content>
     </Theme>
   );
