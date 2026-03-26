@@ -10,4 +10,3 @@ root.render(
   </React.StrictMode>
 );
 
-// Made with Bob
