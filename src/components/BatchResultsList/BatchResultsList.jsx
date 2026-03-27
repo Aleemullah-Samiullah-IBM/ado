@@ -36,15 +36,15 @@ function BatchResultsList({
     
     // Add header row
     csvRows.push([
-      'Query',
+      'User Query',
       'Query Category',
-      'LLM Resolution',
-      'Match Ticket',
-      'Match Subject',
-      'Match Category',
+      'Ticket Subject',
+      'Ticket Number',
+      'Ticket Category',
       'Similarity Score',
-      'Match Description',
-      'Match Resolution'
+      'Ticket Description',
+      'Ticket Resolution',
+      'LLM Resolution'
     ].join(','));
 
     // Add data rows
@@ -59,13 +59,13 @@ function BatchResultsList({
         csvRows.push([
           query,
           queryCategory,
-          llmResolution,
           'N/A',
           'N/A',
           'N/A',
           'N/A',
           'N/A',
-          'N/A'
+          'N/A',
+          llmResolution
         ].join(','));
       } else {
         // Add a row for each history match
@@ -80,13 +80,13 @@ function BatchResultsList({
           csvRows.push([
             query,
             queryCategory,
-            llmResolution,
-            ticket,
             subject,
+            ticket,
             matchCategory,
             similarityScore,
             description,
-            resolution
+            resolution,
+            llmResolution
           ].join(','));
         });
       }
@@ -100,7 +100,8 @@ function BatchResultsList({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `results-${new Date().toISOString().split('T')[0]}.csv`;
+    const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].replace('T', '_');
+    link.download = `results-${timestamp}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
