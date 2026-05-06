@@ -23,6 +23,7 @@ function App() {
   const [strictCategory, setStrictCategory] = useState(true);
   const [useLlmFallback, setUseLlmFallback] = useState(true);
   const [showLlmResolution, setShowLlmResolution] = useState(true);
+  const [projectFilter, setProjectFilter] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -50,17 +51,30 @@ function App() {
     setResults(null);
 
     try {
+      // Transform comma-separated project names to uppercase array
+      const projectFilterArray = projectFilter
+        .split(',')
+        .map(p => p.trim().toUpperCase())
+        .filter(p => p.length > 0);
+
+      const requestBody = {
+        query: query,
+        use_llm_fallback: useLlmFallback,
+        strict_category: strictCategory,
+        show_llm_resolution: showLlmResolution
+      };
+
+      // Only add project_filter if there are values
+      if (projectFilterArray.length > 0) {
+        requestBody.project_filter = projectFilterArray;
+      }
+
       const response = await fetch('http://moaavm03.dev.fyre.ibm.com:9090/api/v1/resolution', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          query: query,
-          use_llm_fallback: useLlmFallback,
-          strict_category: strictCategory,
-          show_llm_resolution: showLlmResolution
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
@@ -87,11 +101,22 @@ function App() {
     setBatchResults(null);
 
     try {
+      // Transform comma-separated project names to uppercase array
+      const projectFilterArray = projectFilter
+        .split(',')
+        .map(p => p.trim().toUpperCase())
+        .filter(p => p.length > 0);
+
       const formData = new FormData();
       formData.append('file', batchFile);
       formData.append('use_llm_fallback', useLlmFallback);
       formData.append('strict_category', strictCategory);
       formData.append('show_llm_resolution', showLlmResolution);
+      
+      // Only add project_filter if there are values
+      if (projectFilterArray.length > 0) {
+        formData.append('project_filter', JSON.stringify(projectFilterArray));
+      }
 
       const response = await fetch('http://moaavm03.dev.fyre.ibm.com:9090/api/v1/batch', {
         method: 'POST',
@@ -199,6 +224,8 @@ function App() {
                     setStrictCategory={setStrictCategory}
                     showLlmResolution={showLlmResolution}
                     setShowLlmResolution={setShowLlmResolution}
+                    projectFilter={projectFilter}
+                    setProjectFilter={setProjectFilter}
                     loading={loading}
                     error={error}
                     setError={setError}
@@ -216,6 +243,8 @@ function App() {
                     setStrictCategory={setStrictCategory}
                     showLlmResolution={showLlmResolution}
                     setShowLlmResolution={setShowLlmResolution}
+                    projectFilter={projectFilter}
+                    setProjectFilter={setProjectFilter}
                     batchLoading={batchLoading}
                     batchError={batchError}
                     setBatchError={setBatchError}

@@ -9,6 +9,8 @@ function AdvancedTab({
   setStrictCategory,
   showLlmResolution,
   setShowLlmResolution,
+  projectFilter,
+  setProjectFilter,
   batchLoading,
   batchError,
   setBatchError,
@@ -35,11 +37,14 @@ function AdvancedTab({
           setStrictCategory={setStrictCategory}
           showLlmResolution={showLlmResolution}
           setShowLlmResolution={setShowLlmResolution}
+          projectFilter={projectFilter}
+          setProjectFilter={setProjectFilter}
           onSearch={handleBatchUpload}
           disabled={batchLoading || !batchFile}
           buttonText="Search"
           strictCategoryId="batch-strict-category"
           showLlmResolutionId="batch-show-llm-resolution"
+          projectFilterId="batch-project-filter"
         />
 
         {batchError && (

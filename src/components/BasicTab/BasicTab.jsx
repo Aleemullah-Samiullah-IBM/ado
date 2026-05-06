@@ -10,6 +10,8 @@ function BasicTab({
   setStrictCategory,
   showLlmResolution,
   setShowLlmResolution,
+  projectFilter,
+  setProjectFilter,
   loading,
   error,
   setError,
@@ -37,11 +39,14 @@ function BasicTab({
           setStrictCategory={setStrictCategory}
           showLlmResolution={showLlmResolution}
           setShowLlmResolution={setShowLlmResolution}
+          projectFilter={projectFilter}
+          setProjectFilter={setProjectFilter}
           onSearch={handleSearch}
           disabled={loading || !query.trim()}
           buttonText="Search"
           strictCategoryId="strict-category"
           showLlmResolutionId="show-llm-resolution"
+          projectFilterId="project-filter"
         />
 
         {error && (

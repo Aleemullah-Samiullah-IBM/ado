@@ -69,11 +69,34 @@
 
 .search-controls {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: $spacing-05;
   padding-top: $spacing-03;
   border-top: 1px solid $border-subtle-01;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-05;
+  
+  .cds--text-input-wrapper {
+    width: 250px;
+    flex-shrink: 0;
+  }
+  
+  .cds--text-input {
+    padding-left: 0;
+    
+    &:focus {
+      outline: none;
+    }
+  }
+  
+  .cds--label {
+    padding-left: 0;
+  }
 }
 
 .checkbox-group {
@@ -81,7 +104,7 @@
   flex-direction: row;
   gap: $spacing-05;
   flex-wrap: wrap;
-  align-items: center;  
+  align-items: center;
 }
 
 .batch-upload-wrapper {
@@ -471,7 +494,7 @@
     padding-top: $spacing-07;
   }
 
-  .search-controls {
+  .controls-row {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-05;
