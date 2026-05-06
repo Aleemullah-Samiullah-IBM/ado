@@ -12,7 +12,7 @@ function ResultTile({ match, getCategoryColor, getSimilarityColorClass }) {
         </span>
       </div>
       <a
-        href={`https://w3.ibm.com/tools/caseviewer/case/${match.ticket}`}
+        href={`https://ibm-middleware.atlassian.net/browse/${match.ticket}`}
         target="_blank"
         rel="noopener noreferrer"
         className="result-ticket-link"
