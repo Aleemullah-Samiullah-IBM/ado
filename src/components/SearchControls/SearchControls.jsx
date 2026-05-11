@@ -3,8 +3,8 @@ import { Checkbox, Button, TextInput } from '@carbon/react';
 import './SearchControls.scss';
 
 function SearchControls({
-  strictCategory,
-  setStrictCategory,
+  useQueryEnhancement,
+  setUseQueryEnhancement,
   showLlmResolution,
   setShowLlmResolution,
   projectFilter,
@@ -12,7 +12,7 @@ function SearchControls({
   onSearch,
   disabled,
   buttonText = 'Search',
-  strictCategoryId = 'strict-category',
+  useQueryEnhancementId = 'use-query-enhancement',
   showLlmResolutionId = 'show-llm-resolution',
   projectFilterId = 'project-filter'
 }) {
@@ -21,10 +21,10 @@ function SearchControls({
       <div className="controls-row">
         <div className="checkbox-group">
           <Checkbox
-            id={strictCategoryId}
-            labelText="Search in predicted category"
-            checked={strictCategory}
-            onChange={(e) => setStrictCategory(e.target.checked)}
+            id={useQueryEnhancementId}
+            labelText="Use Query Enhancement"
+            checked={useQueryEnhancement}
+            onChange={(e) => setUseQueryEnhancement(e.target.checked)}
             disabled={disabled}
           />
           <Checkbox
@@ -35,7 +35,7 @@ function SearchControls({
             disabled={disabled}
           />
         </div>
-        
+
         <TextInput
           id={projectFilterId}
           labelText="Project name"
@@ -45,7 +45,7 @@ function SearchControls({
           onChange={(e) => setProjectFilter(e.target.value)}
           disabled={disabled}
         />
-        
+
         <Button
           kind="primary"
           size="md"

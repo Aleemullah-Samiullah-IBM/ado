@@ -6,8 +6,8 @@ import './BasicTab.scss';
 function BasicTab({
   query,
   setQuery,
-  strictCategory,
-  setStrictCategory,
+  useQueryEnhancement,
+  setUseQueryEnhancement,
   showLlmResolution,
   setShowLlmResolution,
   projectFilter,
@@ -33,10 +33,10 @@ function BasicTab({
           className="search-textarea"
           disabled={loading}
         />
-        
+
         <SearchControls
-          strictCategory={strictCategory}
-          setStrictCategory={setStrictCategory}
+          useQueryEnhancement={useQueryEnhancement}
+          setUseQueryEnhancement={setUseQueryEnhancement}
           showLlmResolution={showLlmResolution}
           setShowLlmResolution={setShowLlmResolution}
           projectFilter={projectFilter}
@@ -44,7 +44,7 @@ function BasicTab({
           onSearch={handleSearch}
           disabled={loading || !query.trim()}
           buttonText="Search"
-          strictCategoryId="strict-category"
+          useQueryEnhancementId="use-query-enhancement"
           showLlmResolutionId="show-llm-resolution"
           projectFilterId="project-filter"
         />

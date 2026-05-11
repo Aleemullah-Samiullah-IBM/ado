@@ -20,7 +20,7 @@ import './App.scss';
 function App() {
   // Single search state
   const [query, setQuery] = useState('');
-  const [strictCategory, setStrictCategory] = useState(true);
+  const [useQueryEnhancement, setUseQueryEnhancement] = useState(false);
   const [useLlmFallback, setUseLlmFallback] = useState(true);
   const [showLlmResolution, setShowLlmResolution] = useState(true);
   const [projectFilter, setProjectFilter] = useState('');
@@ -60,8 +60,9 @@ function App() {
       const requestBody = {
         query: query,
         use_llm_fallback: useLlmFallback,
-        strict_category: strictCategory,
-        show_llm_resolution: showLlmResolution
+        strict_category: false,
+        show_llm_resolution: showLlmResolution,
+        use_query_enhancement: useQueryEnhancement
       };
 
       // Only add project_filter if there are values
@@ -69,7 +70,7 @@ function App() {
         requestBody.project_filter = projectFilterArray;
       }
 
-      const response = await fetch('http://moaavm03.dev.fyre.ibm.com:9090/api/v1/resolution', {
+      const response = await fetch('http://capview.dev.fyre.ibm.com:9090/api/v1/resolution', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,9 +111,10 @@ function App() {
       const formData = new FormData();
       formData.append('file', batchFile);
       formData.append('use_llm_fallback', useLlmFallback);
-      formData.append('strict_category', strictCategory);
+      formData.append('strict_category', 'false');
       formData.append('show_llm_resolution', showLlmResolution);
-      
+      formData.append('use_query_enhancement', useQueryEnhancement);
+
       // Only add project_filter if there are values
       if (projectFilterArray.length > 0) {
         formData.append('project_filter', JSON.stringify(projectFilterArray));
@@ -220,8 +222,8 @@ function App() {
                   <BasicTab
                     query={query}
                     setQuery={setQuery}
-                    strictCategory={strictCategory}
-                    setStrictCategory={setStrictCategory}
+                    useQueryEnhancement={useQueryEnhancement}
+                    setUseQueryEnhancement={setUseQueryEnhancement}
                     showLlmResolution={showLlmResolution}
                     setShowLlmResolution={setShowLlmResolution}
                     projectFilter={projectFilter}
@@ -239,8 +241,8 @@ function App() {
                 <TabPanel>
                   <AdvancedTab
                     batchFile={batchFile}
-                    strictCategory={strictCategory}
-                    setStrictCategory={setStrictCategory}
+                    useQueryEnhancement={useQueryEnhancement}
+                    setUseQueryEnhancement={setUseQueryEnhancement}
                     showLlmResolution={showLlmResolution}
                     setShowLlmResolution={setShowLlmResolution}
                     projectFilter={projectFilter}

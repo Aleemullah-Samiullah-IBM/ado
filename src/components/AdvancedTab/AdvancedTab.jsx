@@ -5,8 +5,8 @@ import './AdvancedTab.scss';
 
 function AdvancedTab({
   batchFile,
-  strictCategory,
-  setStrictCategory,
+  useQueryEnhancement,
+  setUseQueryEnhancement,
   showLlmResolution,
   setShowLlmResolution,
   projectFilter,
@@ -31,10 +31,10 @@ function AdvancedTab({
           onChange={handleFileChange}
           iconDescription="Clear file"
         />
-        
+
         <SearchControls
-          strictCategory={strictCategory}
-          setStrictCategory={setStrictCategory}
+          useQueryEnhancement={useQueryEnhancement}
+          setUseQueryEnhancement={setUseQueryEnhancement}
           showLlmResolution={showLlmResolution}
           setShowLlmResolution={setShowLlmResolution}
           projectFilter={projectFilter}
@@ -42,7 +42,7 @@ function AdvancedTab({
           onSearch={handleBatchUpload}
           disabled={batchLoading || !batchFile}
           buttonText="Search"
-          strictCategoryId="batch-strict-category"
+          useQueryEnhancementId="batch-use-query-enhancement"
           showLlmResolutionId="batch-show-llm-resolution"
           projectFilterId="batch-project-filter"
         />
