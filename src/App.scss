@@ -80,20 +80,20 @@
   align-items: center;
   justify-content: space-between;
   gap: $spacing-05;
-  
+
   .cds--text-input-wrapper {
     width: 250px;
     flex-shrink: 0;
   }
-  
+
   .cds--text-input {
     padding-left: 0;
-    
+
     &:focus {
       outline: none;
     }
   }
-  
+
   .cds--label {
     padding-left: 0;
   }
@@ -191,7 +191,7 @@
 
 .results-container {
   max-width: 1200px;
-  margin: $spacing-09 auto 0;
+  margin: $spacing-06 auto 0; // Reduced from $spacing-09 to $spacing-06 for less gap
   padding: 0 $spacing-05;
 }
 
@@ -228,7 +228,7 @@
   align-items: center;
   justify-content: space-between;
   gap: $spacing-06;
-  
+
   @media (max-width: 672px) {
     flex-direction: column;
     align-items: stretch;
@@ -246,7 +246,7 @@
   color: $text-secondary;
   white-space: nowrap;
   flex-shrink: 0;
-  
+
   strong {
     color: $text-primary;
     font-weight: 600;
@@ -280,7 +280,7 @@
   margin-bottom: $spacing-05;
   padding: $spacing-06;
   background-color: $layer-01;
-  
+
   &:hover {
     background-color: $layer-hover-01;
   }
@@ -323,15 +323,15 @@
   font-weight: 600;
   flex-shrink: 0;
   color: $text-on-color;
-  
+
   &.high-similarity {
     background-color: $support-success;
   }
-  
+
   &.medium-similarity {
     background-color: $support-warning;
   }
-  
+
   &.low-similarity {
     background-color: $support-info;
   }
@@ -347,12 +347,12 @@
   text-decoration: none;
   display: block;
   margin-bottom: $spacing-03;
-  
+
   &:hover {
     color: $link-primary-hover;
     text-decoration: underline;
   }
-  
+
   &:visited {
     color: $link-visited;
   }
@@ -374,11 +374,11 @@
 
 .result-section {
   margin-bottom: $spacing-05;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
-  
+
   .sub-heading {
     // @include type-style('label-01');
     color: $text-primary;
@@ -407,7 +407,7 @@
   background-color: $layer-01;
   position: relative;
   border: 2px solid transparent;
-  
+
   // Blue gradient border for AI-generated content
   &::before {
     content: '';
@@ -415,18 +415,16 @@
     inset: 0;
     border-radius: inherit;
     padding: 2px;
-    background: linear-gradient(
-      to bottom,
-      rgba(120, 180, 255, 0.8),
-      rgba(70, 130, 255, 0.6),
-      rgba(30, 90, 255, 0.4)
-    );
+    background: linear-gradient(to bottom,
+        rgba(120, 180, 255, 0.8),
+        rgba(70, 130, 255, 0.6),
+        rgba(30, 90, 255, 0.4));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
-  
+
   &:hover {
     background-color: $layer-hover-01;
   }
@@ -505,4 +503,3 @@
     }
   }
 }
-

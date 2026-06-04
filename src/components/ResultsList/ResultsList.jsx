@@ -1,7 +1,6 @@
 import React from 'react';
 import { Grid, Column, InlineNotification } from '@carbon/react';
 import ResultTile from '../ResultTile/ResultTile';
-import AccuracyFilter from '../AccuracyFilter/AccuracyFilter';
 import LLMResolutionTile from '../LLMResolutionTile/LLMResolutionTile';
 import './ResultsList.scss';
 
@@ -46,28 +45,19 @@ function ResultsList({
 
   return (
     <div className="results-container">
-      <AccuracyFilter
-        minAccuracy={minAccuracy}
-        maxAccuracy={maxAccuracy}
-        setMinAccuracy={setMinAccuracy}
-        setMaxAccuracy={setMaxAccuracy}
-        filteredCount={filteredMatches.length}
-        totalCount={sortedMatches.length}
-      />
+      {/* AccuracyFilter hidden - defaults to 0-100 range (show all results) */}
 
-      {/* Display Predicted Category */}
-      {results?.data?.category && (
-        <Grid className="predicted-category-grid">
-          <Column lg={16} md={8} sm={4}>
-            <div className="predicted-category-section">
-              <h3 className="predicted-category-title">
-                Predicted Category - <span className="predicted-category-value">{results.data.category}</span>
-              </h3>
-            </div>
-          </Column>
-        </Grid>
-      )}
-      
+      {/* Display total results count */}
+      <Grid className="results-count-grid">
+        <Column lg={16} md={8} sm={4}>
+          <div className="results-count-section">
+            <p className="results-count-text">
+              Showing <strong>{filteredMatches.length}</strong> result{filteredMatches.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        </Column>
+      </Grid>
+
       {filteredMatches.length === 0 ? (
         <Grid>
           <Column lg={16} md={8} sm={4}>

@@ -20,15 +20,15 @@ import './App.scss';
 function App() {
   // Single search state
   const [query, setQuery] = useState('');
-  const [useQueryEnhancement, setUseQueryEnhancement] = useState(false);
+  const [useQueryEnhancement, setUseQueryEnhancement] = useState(true); // Hidden in UI, always enabled
   const [useLlmFallback, setUseLlmFallback] = useState(true);
   const [showLlmResolution, setShowLlmResolution] = useState(true);
   const [projectFilter, setProjectFilter] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [minAccuracy, setMinAccuracy] = useState(70);
-  const [maxAccuracy, setMaxAccuracy] = useState(100);
+  const [minAccuracy, setMinAccuracy] = useState(0); // Hidden in UI, set to 0 to show all results
+  const [maxAccuracy, setMaxAccuracy] = useState(100); // Hidden in UI, set to 100 to show all results
   const textareaRef = useRef(null);
 
   // Batch upload state
@@ -70,7 +70,7 @@ function App() {
         requestBody.project_filter = projectFilterArray;
       }
 
-      const response = await fetch('http://capview.dev.fyre.ibm.com:9090/api/v1/resolution', {
+      const response = await fetch('http://localhost:9090/api/v1/resolution', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

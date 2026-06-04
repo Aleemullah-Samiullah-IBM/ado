@@ -20,13 +20,7 @@ function SearchControls({
     <div className="search-controls">
       <div className="controls-row">
         <div className="checkbox-group">
-          <Checkbox
-            id={useQueryEnhancementId}
-            labelText="Use Query Enhancement"
-            checked={useQueryEnhancement}
-            onChange={(e) => setUseQueryEnhancement(e.target.checked)}
-            disabled={disabled}
-          />
+          {/* Use Query Enhancement checkbox hidden - always enabled by default */}
           <Checkbox
             id={showLlmResolutionId}
             labelText="Show LLM Resolution"

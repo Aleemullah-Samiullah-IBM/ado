@@ -7,9 +7,7 @@ function ResultTile({ match, getCategoryColor, getSimilarityColorClass }) {
     <Tile className={`result-tile ${getSimilarityColorClass(match.similarity_score || 0)}`}>
       <div className="result-header">
         <h4 className="result-subject">{match.subject || 'No Subject'}</h4>
-        <span className={`accuracy-badge ${getSimilarityColorClass(match.similarity_score || 0)}`}>
-          Accuracy {((match.similarity_score || 0) * 100).toFixed(0)}%
-        </span>
+        {/* Accuracy badge hidden */}
       </div>
       <a
         href={`https://ibm-middleware.atlassian.net/browse/${match.ticket}`}
@@ -26,7 +24,7 @@ function ResultTile({ match, getCategoryColor, getSimilarityColorClass }) {
           </Tag>
         </div>
       )}
-      
+
       <div className="result-divider"></div>
       <div className="result-section">
         <span className="sub-heading">Description</span>

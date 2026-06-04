@@ -1,3 +1,29 @@
+@use '@carbon/react/scss/spacing' as *;
+@use '@carbon/react/scss/theme' as *;
+@use '@carbon/react/scss/type' as *;
+
 // ResultsList styles are inherited from App.scss
 // This file is kept for future component-specific styling
 
+.results-count-grid {
+    margin-bottom: $spacing-05;
+}
+
+.results-count-section {
+    padding: $spacing-04 $spacing-05;
+    background-color: $layer-01;
+    border-radius: 4px;
+    border-left: 3px solid $link-primary;
+
+    .results-count-text {
+        @include type-style('body-01');
+        margin: 0;
+        color: $text-secondary;
+        text-align: right; // Align text to the right
+
+        strong {
+            font-weight: 600;
+            color: $text-primary;
+        }
+    }
+}
